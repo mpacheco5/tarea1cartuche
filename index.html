@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Papelería</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-cover bg-center font-sans leading-normal tracking-normal" style="background-image: url('https://png.pngtree.com/thumb_back/fw800/background/20230811/pngtree-the-restaurant-is-being-decorated-image_13028895.jpg');">
+    <nav class="bg-gray-800 p-4 bg-opacity-75">
+        <ul class="flex justify-center space-x-4 text-white font-semibold">
+            <li><a href="index.html" class="hover:text-yellow-400">Inicio</a></li>
+            <li><a href="productos.html" class="hover:text-yellow-400">Productos</a></li>
+            <li><a href="ofertas.html" class="hover:text-yellow-400">Ofertas</a></li>
+            <li><a href="blog.html" class="hover:text-yellow-400">Reseñas</a></li>
+            <li><a href="contacto.html" class="hover:text-yellow-400">Contacto</a></li>
+        </ul>
+    </nav>
+    <header class="bg-cover bg-center h-64 text-center py-10" style="background-image: url('images/fondo-header.jpg')">
+        <div class="bg-black bg-opacity-50 h-full flex flex-col justify-center items-center text-white">
+            <h1 class="text-4xl font-bold">BIENVENIDOS AL BAR AURITA</h1>
+            <p class="text-xl mt-4">¡Siéntase como en casa, ¡pero sin tener que cocinar!!</p>
+            <a href="#productos" class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Explorar productos</a>
+        </div>
+    </header>
+
+    <!-- Sección de productos -->
+    <section id="productos" class="py-12 bg-gray-50 bg-opacity-75">
+        <h2 class="text-4xl font-bold text-center mb-8 text-gray-800">Nuestros Productos</h2>
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center transition-transform transform hover:scale-105 hover:shadow-2xl">
+                <img src="https://recetasdecocina.elmundo.es/wp-content/uploads/2022/04/pollo-asado-al-horno.jpg" class="w-full h-48 object-cover rounded mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800">POLLO AL HORNO</h3>
+                <p class="text-gray-600 mt-2">Pollo asado: crujiente por fuera, jugoso por dentro.</p>
+                <p class="text-green-600 font-bold text-lg mt-2">$2.00</p>
+                <button class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M3 12h18M3 21h18M9 3v18M15 3v18" />
+                    </svg>
+                    Comprar
+                </button>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center transition-transform transform hover:scale-105 hover:shadow-2xl">
+                <img src="https://mongos.com.ec/wp-content/uploads/2020/06/fajita-1.png" alt="Bolígrafo" class="w-full h-48 object-cover rounded mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800"></h3>
+                <p class="text-gray-600 mt-2">PICADITA</p>
+                <p class="text-green-600 font-bold text-lg mt-2">$2.50</p>
+                <button class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M3 12h18M3 21h18M9 3v18M15 3v18" />
+                    </svg>
+                    Comprar
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Sección de contacto -->
+    <section id="contacto" class="py-12 bg-gray-100 bg-opacity-75">
+        <h2 class="text-3xl font-bold text-center mb-6">Contacto</h2>
+        <p class="text-center text-gray-700">Para más información, contáctanos en <a href="mailto:info@tiendapapeleria.com" class="text-blue-600 hover:underline">info@tiendapapeleria.com</a>.</p>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-800 text-white py-4 text-center">
+        <p>&copy; 2024 Tienda de Papelería. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+</html>
