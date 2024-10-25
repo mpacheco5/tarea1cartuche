@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras - Tienda de Papelería</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <!-- Barra de Menú -->
+    <nav class="bg-gray-800 p-4">
+        <ul class="flex justify-center space-x-4 text-white font-semibold">
+            <li><a href="index.html" class="hover:text-yellow-400">Inicio</a></li>
+            <li><a href="productos.html" class="hover:text-yellow-400">Productos</a></li>
+            <li><a href="ofertas.html" class="hover:text-yellow-400">Ofertas</a></li>
+            <li><a href="blog.html" class="hover:text-yellow-400">Reseñas</a></li>
+            <li><a href="contacto.html" class="hover:text-yellow-400">Contacto</a></li>
+            <a id="loginLink" href="login.html" class="text-gray-700 hover:text-orange-500 transition duration-300">Login</a>
+            <li><a href="carrito.html" class="hover:text-yellow-400">Carrito</a></li>
+        </ul>
+    </nav>
+
+    <!-- Encabezado del Carrito -->
+    <header class="bg-gray-800 h-64 text-center py-10">
+        <div class="flex flex-col justify-center items-center text-white h-full">
+            <h1 class="text-4xl font-bold">Tu Carrito de Compras</h1>
+            <p class="text-xl mt-4">Revisa los productos que has agregado</p>
+        </div>
+    </header>
+
+    <!-- Sección del Carrito -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-6">Productos en el Carrito</h2>
+            <div id="carrito-container" class="overflow-x-auto">
+                <!-- Los productos del carrito se cargarán aquí dinámicamente -->
+            </div>
+            <div class="text-center mt-4">
+                <button id="comprar-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Comprar</button>
+            </div>
+            <div id="reporte-container" class="mt-6">
+                <!-- Aquí se generará el reporte de compra -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-800 text-white py-4 text-center">
+        <p>&copy;2024 Bar Aurita. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        function cargarCarrito() {
+            const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            const contenedor = document.getElementById('carrito-container');
+            contenedor.innerHTML = ''; // Limpiar el contenedor antes de agregar nuevos productos
+
+            if (carrito.length === 0) {
+                contenedor.innerHTML = '<p class="text-center text-gray-500">El carrito está vacío.</p>';
+                return;
+            }
+
+            carrito.forEach(producto => {
+                const productoHTML = `
+                    <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center mb-4">
+                        <img src="${producto.pro_ruta}" alt="${producto.pro_nombre}" class="w-full h-auto">
+                        <h3 class="text-xl font-semibold mt-4">${producto.pro_nombre}</h3>
+                        <p class="text-gray-700 mt-2">${producto.pro_descripcion}</p>
+                        <p class="text-green-600 font-bold text-lg mt-2">$${producto.pro_precio} x ${producto.cantidad}</p>
+                    </div>
+                `;
+                contenedor.innerHTML += productoHTML;
+            });
+        }
+
+        // Llamar a la función al cargar la página
+        window.onload = cargarCarrito;
+
+        document.getElementById('comprar-btn').addEventListener('click', async () => {
+            const carrito = JSON.parse(localStorage.getItem('carrito')) || []; // Obtener el carrito
+            if (carrito.length === 0) {
+                alert('El carrito está vacío. Agrega productos antes de comprar.');
+                return;
+            }
+
+            const reporte = []; // Array para almacenar los productos comprados
+            let totalCompra = 0; // Variable para el total de la compra
+
+            for (const producto of carrito) {
+                const pro_id = producto.pro_id; // ID del producto
+                const cantidad = producto.cantidad; // Cantidad del producto
+
+                try {
+                    const response = await fetch('http://localhost:3000/comprar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ pro_id, cantidad }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error al comprar el producto ${producto.pro_nombre}`);
+                    }
+
+                    // Agregar producto al reporte
+                    reporte.push({
+                        nombre: producto.pro_nombre,
+                        cantidad: cantidad,
+                        precio: producto.pro_precio,
+                        total: producto.pro_precio * cantidad,
+                    });
+
+                    totalCompra += producto.pro_precio * cantidad; // Sumar al total de la compra
+
+                } catch (error) {
+                    console.error('Error al realizar la compra:', error);
+                    alert('Error al realizar la compra. Intenta nuevamente.');
+                    return; // Salir del bucle si hay un error
+                }
+            }
+
+            // Mostrar el reporte de compra
+            mostrarReporte(reporte, totalCompra);
+
+            // Generar el PDF del reporte
+            generarPDF(reporte, totalCompra);
+
+            alert('Gracias por tu compra!'); // Mensaje de éxito
+            localStorage.removeItem('carrito'); // Limpiar el carrito después de la compra
+            cargarCarrito(); // Recargar el carrito
+        });
+
+        function mostrarReporte(reporte, totalCompra) {
+            const contenedorReporte = document.getElementById('reporte-container');
+            contenedorReporte.innerHTML = '<h3 class="text-2xl font-bold mb-4">Reporte de Compra</h3>';
+
+            const tablaHTML = `
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="py-2 px-4 border">Producto</th>
+                            <th class="py-2 px-4 border">Cantidad</th>
+                            <th class="py-2 px-4 border">Precio Unitario</th>
+                            <th class="py-2 px-4 border">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${reporte.map(item => `
+                            <tr>
+                                <td class="py-2 px-4 border">${item.nombre}</td>
+                                <td class="py-2 px-4 border">${item.cantidad}</td>
+                                <td class="py-2 px-4 border">$${item.precio}</td>
+                                <td class="py-2 px-4 border">$${item.total}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <h4 class="mt-4 font-bold">Total de la Compra: $${totalCompra}</h4>
+            `;
+            contenedorReporte.innerHTML += tablaHTML;
+        }
+
+        function generarPDF(reporte, totalCompra) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16);
+            doc.text('Reporte de Compra', 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, 30);
+            doc.text(`Total de la Compra: $${totalCompra}`, 20, 40);
+            doc.text('-------------------------------------------', 20, 50);
+
+            doc.setFontSize(12);
+            reporte.forEach((producto, index) => {
+                const line = `${index + 1}. ${producto.nombre} - Cantidad: ${producto.cantidad} - Precio: $${producto.precio} - Total: $${(producto.precio * producto.cantidad).toFixed(2)}`;
+                doc.text(line, 20, 60 + (index * 10));
+            });
+
+            doc.save('reporte_compra.pdf');
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Tienda de Papelería</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <!-- Barra de Menú -->
+    <nav class="bg-gray-800 p-4">
+        <ul class="flex justify-center space-x-4 text-white font-semibold">
+            <li><a href="index.html" class="hover:text-yellow-400">Inicio</a></li>
+            <li><a href="productos.html" class="hover:text-yellow-400">Productos</a></li>
+            <li><a href="ofertas.html" class="hover:text-yellow-400">Ofertas</a></li>
+            <li><a href="blog.html" class="hover:text-yellow-400">Reseñas</a></li>
+            <li><a href="contacto.html" class="hover:text-yellow-400">Contacto</a></li>
+            <a id="loginLink" href="login.html"
+            class="text-gray-700 hover:text-orange-500 transition duration-300">Login</a>
+            <li><a href="carrito.html" class="hover:text-yellow-400">carrito</a></li>
+        </ul>
+    </nav>
+
+    <!-- Encabezado principal -->
+    <header class="bg-cover bg-center h-64 text-center py-10" style="background-image: url('https://www.shutterstock.com/image-vector/fast-food-seamless-pattern-vector-260nw-2475991303.jpg')">
+        <div class="bg-black bg-opacity-50 h-full flex flex-col justify-center items-center text-white">
+            <h1 class="text-4xl font-bold">Nuestros Productos</h1>
+            <p class="text-xl mt-4">Encuentra todo lo que necesitas para tu papelería</p>
+        </div>
+    </header>
+
+    <!-- Sección de productos -->
+    <section class="py-12 bg-white">
+        <h2 class="text-3xl font-bold text-center mb-6">Catálogo de Productos</h2>
+        <div id="product-container" class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Los productos se cargarán aquí dinámicamente -->
+        </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-800 text-white py-4 text-center">
+        <p>&copy;2024 Bar Aurita. Todos los derechos reservados.</p>
+    </footer>
+    <script>
+        // Función para cargar productos dinámicamente
+        async function cargarProductos() {
+            try {
+                const response = await fetch('http://localhost:3000/productos');
+                const productos = await response.json();
+                const contenedor = document.getElementById('product-container');
+                contenedor.innerHTML = ''; // Limpiar el contenedor antes de agregar nuevos productos
+
+                productos.forEach(producto => {
+                    const productoHTML = `
+                        <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center">
+                            <img src="${producto.pro_ruta}" alt="${producto.pro_nombre}" class="w-full h-auto">
+                            <h3 class="text-xl font-semibold mt-4">${producto.pro_nombre}</h3>
+                            <p class="text-gray-700 mt-2">${producto.pro_descripcion}</p>
+                            <p class="text-gray-700 mt-2">stock: ${producto.pro_stock}</p>
+                            <p class="text-green-600 font-bold text-lg mt-2">$${producto.pro_precio}</p>
+                            <button 
+    class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+    onclick="agregarAlCarrito('${producto.pro_id}', '${producto.pro_nombre}', '${producto.pro_descripcion}', ${producto.pro_precio}, '${producto.pro_ruta}')">
+    Comprar
+</button>
+                        </div>
+                    `;
+                    contenedor.innerHTML += productoHTML;
+                });
+            } catch (error) {
+                console.error('Error al cargar los productos:', error);
+            }
+        }
+
+        // Cargar productos cuando la página haya cargado
+        window.onload = cargarProductos;
+    </script>
+    <script> function verificarToken() {
+        const token = localStorage.getItem('token'); // Cambia 'token' por la clave que estés usando
+        const loginLink = document.getElementById('loginLink');
+
+        if (token) {
+            // Si hay token, cambia "Iniciar Sesión" por "Perfil"
+            loginLink.innerHTML = 'Perfil';
+            loginLink.href = 'perfil.html'; // Cambia la ruta a la página de perfil
+        }
+    }
+
+    // Llamar a la función al cargar la página
+    document.addEventListener('DOMContentLoaded', verificarToken);</script>
+
+<script> function agregarAlCarrito(id, nombre, descripcion, precio, ruta) {
+    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const producto = {
+        pro_id: id,
+        pro_nombre: nombre,
+        pro_descripcion: descripcion,
+        pro_precio: precio,
+        pro_ruta: ruta,
+        cantidad: 1 // Puedes agregar una propiedad de cantidad si deseas
+    };
+
+    // Verificar si el producto ya existe en el carrito
+    const indice = carrito.findIndex(item => item.pro_id === id);
+    if (indice !== -1) {
+        carrito[indice].cantidad += 1; // Aumentar la cantidad si ya está en el carrito
+    } else {
+        carrito.push(producto); // Agregar el producto si no está en el carrito
+    }
+    
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    alert(`${nombre} ha sido agregado al carrito.`);
+}
+</script>
+</body>
+</html>

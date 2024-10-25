@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Bar Aurita</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-cover bg-center font-sans leading-normal tracking-normal" style="background-image: url('https://png.pngtree.com/thumb_back/fw800/background/20230811/pngtree-the-restaurant-is-being-decorated-image_13028895.jpg');">
+    
+    <div class="min-h-screen flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Iniciar Sesión</h2>
+
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 font-bold mb-2">Correo electrónico</label>
+                    <input type="email" id="email" name="email" required class="w-full p-3 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 font-bold mb-2">Contraseña</label>
+                    <input type="password" id="password" name="password" required class="w-full p-3 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                </div>
+
+                <div class="flex items-center justify-between mb-4">
+                    <label class="flex items-center text-gray-700">
+                        <input type="checkbox" class="form-checkbox h-4 w-4 text-green-500">
+                        <span class="ml-2">Recordarme</span>
+                    </label>
+                    <a href="#" class="text-sm text-green-500 hover:underline">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <p class="mt-6 text-center text-gray-600">¿No tienes una cuenta? <a href="registro.html" class="text-green-500 hover:underline">Regístrate</a></p>
+        </div>
+    </div>
+
+    <!-- Script para manejar el inicio de sesión -->
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+            const username = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username , password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Guardar el token en localStorage o en cookies
+                    localStorage.setItem('token', data.token);
+                    alert('Inicio de sesión exitoso!');
+                    // Redirigir al usuario a otra página
+                    window.location.href = 'perfil.html'; // Cambia esta URL a la página que desees
+                } else {
+                    const errorText = await response.text();
+                    alert('Error: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+                alert('Error al intentar iniciar sesión. Por favor, inténtalo de nuevo más tarde.');
+            }
+        });
+    </script>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-800 text-white py-4 text-center mt-8">
+        <p>&copy; 2024 Bar Aurita. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+</html>
